@@ -19,6 +19,7 @@
     "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
+    "@types/ed2curve": "^0.2.4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

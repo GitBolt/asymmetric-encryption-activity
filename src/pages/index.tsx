@@ -98,7 +98,7 @@ export default function Home() {
     const nonce = generateNonce();
     const curve25519PrivateKey = ed2curve.convertSecretKey(bs58.decode(state.keyPair.privateKey));
     const curve25519PublicKey = ed2curve.convertPublicKey(bs58.decode(state.keyPair.publicKey));
-    
+    if (!curve25519PublicKey) return
     const messageUint8 = encode(state.message);
     const encrypted = nacl.box(messageUint8, nonce, curve25519PublicKey, curve25519PrivateKey);
     
@@ -113,9 +113,18 @@ export default function Home() {
     const curve25519PrivateKey = ed2curve.convertSecretKey(bs58.decode(state.keyPair.privateKey));
     const curve25519PublicKey = ed2curve.convertPublicKey(bs58.decode(state.keyPair.publicKey));
 
+    if (!curve25519PublicKey) return
+    const decodedNonce = bs58.decode(state.nonce);
+    const decodedMessage = bs58.decode(inputEncryptedMessage);
+    if (!decodedNonce || !decodedMessage) {
+      updateState({ decryptedMessage: 'Invalid nonce or encrypted message' });
+      setIsModalOpen(true);
+      return;
+    }
+
     const decrypted = nacl.box.open(
-      bs58.decode(inputEncryptedMessage),
-      bs58.decode(state.nonce),
+      decodedMessage,
+      decodedNonce,
       curve25519PublicKey,
       curve25519PrivateKey
     );
