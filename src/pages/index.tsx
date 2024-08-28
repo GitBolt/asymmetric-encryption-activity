@@ -112,7 +112,7 @@ export default function Home() {
     if (!state.keyPair || !state.nonce) return;
     const curve25519PrivateKey = ed2curve.convertSecretKey(bs58.decode(state.keyPair.privateKey));
     const curve25519PublicKey = ed2curve.convertPublicKey(bs58.decode(state.keyPair.publicKey));
-    
+
     const decrypted = nacl.box.open(
       bs58.decode(inputEncryptedMessage),
       bs58.decode(state.nonce),
@@ -154,6 +154,9 @@ export default function Home() {
     }
   };
 
+  const [showPrivateKey, setShowPrivateKey] = useState(false);
+
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Asymmetric Encryption Demo</h1>
@@ -164,7 +167,7 @@ export default function Home() {
         </button>
 
         <div className={styles.keyPairDisplay}>
-          <h2>Key Pair</h2>
+          <h2>Keypair</h2>
           <div className={styles.keyInfo}>
             <p>
               <strong className={styles.publicKey}>Public Key:</strong>
@@ -172,7 +175,15 @@ export default function Home() {
             </p>
             <p>
               <strong className={styles.privateKey}>Private Key:</strong>
-              <span className={styles.keyValue}>{state.keyPair?.privateKey}</span>
+              <span className={styles.keyValue}>
+              {showPrivateKey ? state.keyPair?.privateKey : '•••••••••••••••••••••••••••••••••••••••••••••••••'}
+              <button
+              onClick={() => setShowPrivateKey(!showPrivateKey)}
+              className={`${styles.button} ${styles.toggleButton}`}
+            >
+              {showPrivateKey ? 'Hide' : 'Show'}
+            </button>
+            </span>
             </p>
           </div>
         </div>
@@ -230,13 +241,6 @@ export default function Home() {
               Close
             </button>
           </div>
-        </div>
-      )}
-
-      {state.decryptedMessage && (
-        <div className={styles.decryptedMessageBox}>
-          <h2>The decrypted message is:</h2>
-          <p className={styles.decryptedMessage}>{state.decryptedMessage}</p>
         </div>
       )}
 
