@@ -4,6 +4,7 @@ import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import ed2curve from 'ed2curve';
 import styles from '@/styles/Home.module.css';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const encode = (message: string) => {
   const encoder = new TextEncoder();
@@ -47,10 +48,11 @@ export default function Home() {
   const [inputEncryptedMessage, setInputEncryptedMessage] = useState('');
   const [inputSignature, setInputSignature] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [copiedText, setCopiedText] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sessionId) {
-      const newSessionId = Math.random().toString(36).substring(7);
+      const newSessionId = Math.floor(Math.random() * 10).toString();
       setSessionId(newSessionId);
     }
   }, [sessionId]);
@@ -102,29 +104,36 @@ export default function Home() {
     const messageUint8 = encode(state.message);
     const encrypted = nacl.box(messageUint8, nonce, curve25519PublicKey, curve25519PrivateKey);
     
+    const encryptedWithNonce = new Uint8Array(nonce.length + encrypted.length);
+    encryptedWithNonce.set(nonce);
+    encryptedWithNonce.set(encrypted, nonce.length);
+    
     updateState({ 
-      encryptedMessage: bs58.encode(encrypted),
+      encryptedMessage: bs58.encode(encryptedWithNonce),
       nonce: bs58.encode(nonce)
     });
   };
 
   const decryptMessage = () => {
-    if (!state.keyPair || !state.nonce) return;
+    if (!state.keyPair) return;
     const curve25519PrivateKey = ed2curve.convertSecretKey(bs58.decode(state.keyPair.privateKey));
     const curve25519PublicKey = ed2curve.convertPublicKey(bs58.decode(state.keyPair.publicKey));
 
-    if (!curve25519PublicKey) return
-    const decodedNonce = bs58.decode(state.nonce);
+    if (!curve25519PublicKey) return;
+    
     const decodedMessage = bs58.decode(inputEncryptedMessage);
-    if (!decodedNonce || !decodedMessage) {
-      updateState({ decryptedMessage: 'Invalid nonce or encrypted message' });
+    if (decodedMessage.length <= nacl.box.nonceLength) {
+      updateState({ decryptedMessage: 'Invalid encrypted message' });
       setIsModalOpen(true);
       return;
     }
 
+    const nonce = decodedMessage.slice(0, nacl.box.nonceLength);
+    const encryptedData = decodedMessage.slice(nacl.box.nonceLength);
+
     const decrypted = nacl.box.open(
-      decodedMessage,
-      decodedNonce,
+      encryptedData,
+      nonce,
       curve25519PublicKey,
       curve25519PrivateKey
     );
@@ -165,6 +174,10 @@ export default function Home() {
 
   const [showPrivateKey, setShowPrivateKey] = useState(false);
 
+  const handleCopy = (text: string) => {
+    setCopiedText(text);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
 
   return (
     <div className={styles.container}>
@@ -215,12 +228,22 @@ export default function Home() {
           <div className={styles.resultBox}>
             <strong>Encrypted Message:</strong>
             <p className={styles.cryptoOutput}>{state.encryptedMessage}</p>
+            <CopyToClipboard text={state.encryptedMessage} onCopy={() => handleCopy('encryptedMessage')}>
+              <button className={styles.copyButton}>
+                {copiedText === 'encryptedMessage' ? 'Copied!' : 'Copy'}
+              </button>
+            </CopyToClipboard>
           </div>
         )}
         {state.signature && (
           <div className={styles.resultBox}>
             <strong>Signature:</strong>
             <p className={styles.cryptoOutput}>{state.signature}</p>
+            <CopyToClipboard text={state.signature} onCopy={() => handleCopy('signature')}>
+              <button className={styles.copyButton}>
+                {copiedText === 'signature' ? 'Copied!' : 'Copy'}
+              </button>
+            </CopyToClipboard>
           </div>
         )}
         <input
@@ -272,8 +295,10 @@ export default function Home() {
             type="text"
             value={customSessionId}
             onChange={(e) => setCustomSessionId(e.target.value)}
-            placeholder="Enter session ID to join"
+            placeholder="Enter single digit session ID"
             className={styles.input}
+            maxLength={1}
+            pattern="\d"
           />
           <button type="submit" className={`${styles.button} ${styles.joinButton}`}>
             Join Session

@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@solana/web3.js": "^1.95.3",
+    "@types/react-copy-to-clipboard": "^5.0.7",
     "bs58": "^6.0.0",
     "ed2curve": "^0.3.0",
     "next": "14.2.7",
     "react": "^18",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1"
