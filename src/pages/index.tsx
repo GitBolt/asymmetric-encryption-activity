@@ -183,85 +183,110 @@ export default function Home() {
     <div className={styles.container}>
       <h1 className={styles.title}>Asymmetric Encryption Demo</h1>
       
-      <div className={styles.card}>
-        <button onClick={generateKeyPair} className={styles.button}>
-          Generate New Key Pair
-        </button>
-
-        <div className={styles.keyPairDisplay}>
-          <h2>Keypair</h2>
-          <div className={styles.keyInfo}>
-            <p>
-              <strong className={styles.publicKey}>Public Key:</strong>
-              <span className={styles.keyValue}>{state.keyPair?.publicKey}</span>
-            </p>
-            <p>
-              <strong className={styles.privateKey}>Private Key:</strong>
-              <span className={styles.keyValue}>
-              {showPrivateKey ? state.keyPair?.privateKey : '•••••••••••••••••••••••••••••••••••••••••••••••••'}
-              <button
-              onClick={() => setShowPrivateKey(!showPrivateKey)}
-              className={`${styles.button} ${styles.toggleButton}`}
-            >
-              {showPrivateKey ? 'Hide' : 'Show'}
+      <div className={styles.content}>
+        <div className={styles.leftColumn}>
+          <div className={styles.card}>
+            <h2>Keypair</h2>
+            <button onClick={generateKeyPair} className={styles.button}>
+              Generate New Key Pair
             </button>
-            </span>
-            </p>
+            <div className={styles.keyInfo}>
+              <p>
+                <strong className={styles.publicKey}>Public Key:</strong>
+                <span className={styles.keyValue}>{state.keyPair?.publicKey}</span>
+              </p>
+              <p>
+                <strong className={styles.privateKey}>Private Key:</strong>
+                <span className={styles.keyValue}>
+                  {showPrivateKey ? state.keyPair?.privateKey : '•••••••••••••••••••••••••••••••••••••••••••••••••'}
+                  <button
+                    onClick={() => setShowPrivateKey(!showPrivateKey)}
+                    className={`${styles.button} ${styles.toggleButton}`}
+                  >
+                    {showPrivateKey ? 'Hide' : 'Show'}
+                  </button>
+                </span>
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className={styles.card}>
-        <h2>Encryption / Decryption / Signature</h2>
-        <input
-          type="text"
-          value={state.message}
-          onChange={(e) => updateState({ message: e.target.value })}
-          placeholder="Enter message"
-          className={styles.input}
-        />
-        <div className={styles.buttonGroup}>
-          <button onClick={encryptMessage} className={styles.button}>Encrypt</button>
-          <button onClick={signMessage} className={styles.button}>Sign</button>
+          <div className={styles.card}>
+            <h2>Session</h2>
+            <div className={styles.currentSession}>
+              <h3>Current Session ID:</h3>
+              <p className={styles.sessionId}>{sessionId}</p>
+            </div>
+            <form onSubmit={joinSession} className={styles.joinSessionForm}>
+              <input
+                type="text"
+                value={customSessionId}
+                onChange={(e) => setCustomSessionId(e.target.value)}
+                placeholder="Enter single digit session ID"
+                className={styles.input}
+                maxLength={1}
+                pattern="\d"
+              />
+              <button type="submit" className={`${styles.button} ${styles.joinButton}`}>
+                Join Session
+              </button>
+            </form>
+          </div>
         </div>
-        {state.encryptedMessage && (
-          <div className={styles.resultBox}>
-            <strong>Encrypted Message:</strong>
-            <p className={styles.cryptoOutput}>{state.encryptedMessage}</p>
-            <CopyToClipboard text={state.encryptedMessage} onCopy={() => handleCopy('encryptedMessage')}>
-              <button className={styles.copyButton}>
-                {copiedText === 'encryptedMessage' ? 'Copied!' : 'Copy'}
-              </button>
-            </CopyToClipboard>
+
+        <div className={styles.rightColumn}>
+          <div className={styles.card}>
+            <h2>Encryption / Decryption / Signature</h2>
+            <input
+              type="text"
+              value={state.message}
+              onChange={(e) => updateState({ message: e.target.value })}
+              placeholder="Enter message"
+              className={styles.input}
+            />
+            <div className={styles.buttonGroup}>
+              <button onClick={encryptMessage} className={`${styles.button} ${styles.encryptButton}`}>Encrypt</button>
+              <button onClick={signMessage} className={`${styles.button} ${styles.signButton}`}>Sign</button>
+            </div>
+            {state.encryptedMessage && (
+              <div className={styles.resultBox}>
+                <strong>Encrypted Message:</strong>
+                <p className={styles.cryptoOutput}>{state.encryptedMessage}</p>
+                <CopyToClipboard text={state.encryptedMessage} onCopy={() => handleCopy('encryptedMessage')}>
+                  <button className={styles.copyButton}>
+                    {copiedText === 'encryptedMessage' ? 'Copied!' : 'Copy'}
+                  </button>
+                </CopyToClipboard>
+              </div>
+            )}
+            {state.signature && (
+              <div className={styles.resultBox}>
+                <strong>Signature:</strong>
+                <p className={styles.cryptoOutput}>{state.signature}</p>
+                <CopyToClipboard text={state.signature} onCopy={() => handleCopy('signature')}>
+                  <button className={styles.copyButton}>
+                    {copiedText === 'signature' ? 'Copied!' : 'Copy'}
+                  </button>
+                </CopyToClipboard>
+              </div>
+            )}
+            <input
+              type="text"
+              value={inputEncryptedMessage}
+              onChange={(e) => setInputEncryptedMessage(e.target.value)}
+              placeholder="Enter encrypted message to decrypt"
+              className={styles.input}
+            />
+            <button onClick={decryptMessage} className={`${styles.button} ${styles.decryptButton}`}>Decrypt</button>
+            <input
+              type="text"
+              value={inputSignature}
+              onChange={(e) => setInputSignature(e.target.value)}
+              placeholder="Enter signature to verify"
+              className={styles.input}
+            />
+            <button onClick={verifySignature} className={`${styles.button} ${styles.verifyButton}`}>Verify Signature</button>
           </div>
-        )}
-        {state.signature && (
-          <div className={styles.resultBox}>
-            <strong>Signature:</strong>
-            <p className={styles.cryptoOutput}>{state.signature}</p>
-            <CopyToClipboard text={state.signature} onCopy={() => handleCopy('signature')}>
-              <button className={styles.copyButton}>
-                {copiedText === 'signature' ? 'Copied!' : 'Copy'}
-              </button>
-            </CopyToClipboard>
-          </div>
-        )}
-        <input
-          type="text"
-          value={inputEncryptedMessage}
-          onChange={(e) => setInputEncryptedMessage(e.target.value)}
-          placeholder="Enter encrypted message to decrypt"
-          className={styles.input}
-        />
-        <button onClick={decryptMessage} className={styles.button}>Decrypt</button>
-        <input
-          type="text"
-          value={inputSignature}
-          onChange={(e) => setInputSignature(e.target.value)}
-          placeholder="Enter signature to verify"
-          className={styles.input}
-        />
-        <button onClick={verifySignature} className={styles.button}>Verify Signature</button>
+        </div>
       </div>
 
       {isModalOpen && (
@@ -284,27 +309,6 @@ export default function Home() {
           </p>
         </div>
       )}
-
-      <div className={styles.sessionSection}>
-        <div className={styles.currentSession}>
-          <h3>Current Session ID:</h3>
-          <p className={styles.sessionId}>{sessionId}</p>
-        </div>
-        <form onSubmit={joinSession} className={styles.joinSessionForm}>
-          <input
-            type="text"
-            value={customSessionId}
-            onChange={(e) => setCustomSessionId(e.target.value)}
-            placeholder="Enter single digit session ID"
-            className={styles.input}
-            maxLength={1}
-            pattern="\d"
-          />
-          <button type="submit" className={`${styles.button} ${styles.joinButton}`}>
-            Join Session
-          </button>
-        </form>
-      </div>
     </div>
   );
 }

@@ -4,51 +4,97 @@
   background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
   color: #ffffff;
   font-family: 'Roboto', Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   text-align: center;
   color: #ffffff;
   margin-bottom: 2rem;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
+.content {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.leftColumn, .rightColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .card {
   background: rgba(42, 42, 42, 0.8);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-  width: 100%;
-  max-width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #4a90e2;
+}
 
 .button {
   background-color: #4a90e2;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 25px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: bold;
   transition: all 0.3s ease;
   margin: 0.5rem 0;
   text-transform: uppercase;
   letter-spacing: 1px;
+  width: 100%;
 }
 
 .button:hover {
-  background-color: #357abd;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  justify-content: space-between;
+}
+
+.buttonGroup .button {
+  flex: 1;
+}
+
+.encryptButton, .decryptButton, .signButton, .verifyButton {
+  background-color: #4a90e2;
+}
+
+.copyButton {
+  background-color: transparent;
+  color: #4a90e2;
+  border: 1px solid #4a90e2;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  margin-left: 0.5rem;
+}
+
+.copyButton:hover {
+  background-color: rgba(74, 144, 226, 0.1);
 }
 
 .input {
@@ -56,7 +102,7 @@
   padding: 0.75rem;
   margin-bottom: 1rem;
   border: 1px solid #444;
-  border-radius: 25px;
+  border-radius: 4px;
   font-size: 1rem;
   background-color: rgba(51, 51, 51, 0.8);
   color: #ffffff;
@@ -122,8 +168,9 @@
   font-family: 'Roboto Mono', monospace;
   margin-top: 0.25rem;
   word-break: break-all;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   flex-grow: 1;
+  margin-right: 0.5rem;
 }
 
 .decryptedMessageBox,
@@ -136,6 +183,8 @@
   width: 100%;
   max-width: 600px;
   animation: fadeIn 0.5s ease;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .decryptedMessage {
@@ -229,10 +278,32 @@
 }
 
 .joinButton {
+  background-color: #4a90e2;
   margin-top: 1rem;
 }
 
+.toggleButton {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+  background-color: transparent;
+  color: #4a90e2;
+  border: 1px solid #4a90e2;
+}
+
+.toggleButton:hover {
+  background-color: rgba(74, 144, 226, 0.1);
+}
+
 @media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+  }
+
+  .leftColumn, .rightColumn {
+    width: 100%;
+  }
+
   .container {
     padding: 1rem;
   }
@@ -267,21 +338,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
-
-.toggleButton {
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
-  margin-left: 1rem;
-}
-
 
 .copyButton {
   margin-left: 10px;
   padding: 5px 10px;
   background-color: #f0f0f0;
   border: 1px solid #ccc;
-  border-radius: 3px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
